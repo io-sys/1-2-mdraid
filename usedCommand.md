@@ -18,17 +18,20 @@ mdadm: Unrecognised md component device - /dev/sdf
 mdadm: Unrecognised md component device - /dev/sdg
 ```
 ##### Создать новый raid
-	§ устройство md0 
-	§ raid5 уровня -l 5
-	§ из 6 дисков -n 6
-	§ подсовываем диски /dev/sd{b,c,d,e,f,g}
+```	- устройство md0 
+	- raid5 уровня -l 5
+	- из 6 дисков -n 6
+	- подсовываем диски /dev/sd{b,c,d,e,f,g}
+```
 mdadm --create --verbose /dev/md0 -l 5 -n 6 /dev/sd{b,c,d,e,f,g}
+```
 mdadm: layout defaults to left-symmetric
 mdadm: layout defaults to left-symmetric
 mdadm: chunk size defaults to 512K
 mdadm: size set to 253952K
 mdadm: Defaulting to version 1.2 metadata
 mdadm: array /dev/md0 started.
+```
 ##### Проверка, raid собрался, все юниты U на месте.
 cat /proc/mdstat
 Personalities : [raid6] [raid5] [raid4]
