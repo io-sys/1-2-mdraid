@@ -15,7 +15,8 @@ mdadm: Unrecognised md component device - /dev/sdc
 mdadm: Unrecognised md component device - /dev/sdd
 mdadm: Unrecognised md component device - /dev/sde
 mdadm: Unrecognised md component device - /dev/sdf
-mdadm: Unrecognised md component device - /dev/sdg```
+mdadm: Unrecognised md component device - /dev/sdg
+```
 ##### Создать новый raid
 	§ устройство md0 
 	§ raid5 уровня -l 5
