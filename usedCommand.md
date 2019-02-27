@@ -11,10 +11,11 @@ lshw -short | grep disk
 ---
 
 ##### Стереть метаданные на блочных устройствах от старых raid
->Ошибка Unrecognised md ... означает, что метаданных raid на диске не было, можно создавать raid.
+
 ```php
 mdadm --zero-superblock --force /dev/sd{b,c,d,e,f,g}
 ```
+>Ошибка Unrecognised md ... означает, что метаданных raid на диске не было, можно создавать raid.
 ```
 mdadm: Unrecognised md component device - /dev/sdb
 mdadm: Unrecognised md component device - /dev/sdc
@@ -333,7 +334,7 @@ mkdir -p /mnt/raid/part{1,2,3,4,5}
 for i in $(seq 1 5); do mount /dev/md0p$i /mnt/raid/part$i; done
 df -hT
 ```
-```html
+```
 Filesystem     Type      Size  Used Avail Use% Mounted on
 /dev/sda1      xfs        40G  3.0G   38G   8% /
 devtmpfs       devtmpfs  110M     0  110M   0% /dev
