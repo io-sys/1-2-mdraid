@@ -28,7 +28,6 @@ mdadm: Unrecognised md component device - /dev/sdg
 >	2. raid5 уровня -l 5
 >	3. из 6 дисков -n 6
 >	4. подсовываем диски /dev/sd{b,c,d,e,f,g}
-```
 ```php
 mdadm --create --verbose /dev/md0 -l 5 -n 6 /dev/sd{b,c,d,e,f,g}
 ```
@@ -91,9 +90,7 @@ Consistency Policy : resync
        6       8       96        5      active sync   /dev/sdg
 ```
 ---
-# Создание mdadm.conf для ОС - устаревшее, рекомендуется создавать.
->	1. какой RAID массив и 
->	2. из чего состоит
+# Создание mdadm.conf - устаревшее, создать файл рекомендуется.
 ##### Показать информацию raid
 ```php
 mdadm --detail --scan --verbose
@@ -102,12 +99,13 @@ mdadm --detail --scan --verbose
 ARRAY /dev/md0 level=raid5 num-devices=6 metadata=1.2 name=otuslinux:0 UUID=8d599f5e:f124b382:c434b6b6:5564f07d
    devices=/dev/sdb,/dev/sdc,/dev/sdd,/dev/sde,/dev/sdf,/dev/sdg
 ```
----
 ##### Показать справку по формату файла mdadm.conf
 ```php
 man mdadm.conf
 ```
 ##### Создать файл mdadm.conf
+>	1. тип RAID массива и 
+>	2. из чего состоит
 ```php
 touch /etc/mdadm.conf
 ```
@@ -126,7 +124,8 @@ mdadm --detail --scan --verbose | awk '/ARRAY/ {print}' >> /etc/mdadm.conf
 ```php
 mdadm /dev/md0 --fail /dev/sdf
 ```
-```mdadm: set /dev/sdf faulty in /dev/md0
+```
+mdadm: set /dev/sdf faulty in /dev/md0
 ```
 ##### Показать юниты U и _
 ```php
@@ -181,6 +180,8 @@ Consistency Policy : resync
 #### Убрать faulty диск из raid  чтобы новый установить или перезагрузиться после установки флага --fail
 ```php
 mdadm /dev/md0 --remove /dev/sdf
+```
+```
 mdadm: added /dev/sdf
 ```
 #### Стереть метаданные.
