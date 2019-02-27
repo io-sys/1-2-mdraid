@@ -1,7 +1,7 @@
 
 ##### Показать HW
 ```php
-disk -l
+fdisk -l
 lsblk
 lshw
 lsscsi
@@ -29,7 +29,9 @@ mdadm: Unrecognised md component device - /dev/sdg
 	- из 6 дисков -n 6
 	- подсовываем диски /dev/sd{b,c,d,e,f,g}
 ```
+```php
 mdadm --create --verbose /dev/md0 -l 5 -n 6 /dev/sd{b,c,d,e,f,g}
+```
 ```
 mdadm: layout defaults to left-symmetric
 mdadm: layout defaults to left-symmetric
@@ -39,7 +41,10 @@ mdadm: Defaulting to version 1.2 metadata
 mdadm: array /dev/md0 started.
 ```
 ##### Проверка, raid собрался, все юниты U на месте.
+```php
 cat /proc/mdstat
+```
+```
 Personalities : [raid6] [raid5] [raid4]
 md0 : active raid5 sdg[6] sdf[4] sde[3] sdd[2] sdc[1] sdb[0]
       1269760 blocks super 1.2 level 5, 512k chunk, algorithm 2 [6/6] [UUUUUU]
@@ -80,12 +85,14 @@ Consistency Policy : resync
        3       8       64        3      active sync   /dev/sde
        4       8       80        4      active sync   /dev/sdf
        6       8       96        5      active sync   /dev/sdg
-
+```
 Созданеи mdadm.conf для ОС, 
 	1. какой RAID массив и 
 	2. из чего состоит
 Показать информацию raid
+```php
 mdadm --detail --scan --verbose
+```
 ARRAY /dev/md0 level=raid5 num-devices=6 metadata=1.2 name=otuslinux:0 UUID=8d599f5e:f124b382:c434b6b6:5564f07d
    devices=/dev/sdb,/dev/sdc,/dev/sdd,/dev/sde,/dev/sdf,/dev/sdg
 
@@ -243,15 +250,21 @@ Number  Start   End     Size   File system  Name     Flags
  4      781MB   1041MB  260MB               primary
  5      1041MB  1298MB  257MB               primary
 
+```php
 $ ls /dev/md0*
+```
+```
 /dev/md0  /dev/md0p1  /dev/md0p2  /dev/md0p3  /dev/md0p4  /dev/md0p5
-
-Создать файловую систему на все х созданных патрициях.
-# for i in $(seq 1 5); do sudo mkfs.ext4 /dev/md0p$i; done
+```
+#### Создать файловую систему на все х созданных патрициях.
+```php
+for i in $(seq 1 5); do sudo mkfs.ext4 /dev/md0p$i; done
 lsblk -f
 mkdir -p /mnt/raid/part{1,2,3,4,5}
 for i in $(seq 1 5); do mount /dev/md0p$i /mnt/raid/part$i; done
 df -hT
+```
+```
 Filesystem     Type      Size  Used Avail Use% Mounted on
 /dev/sda1      xfs        40G  3.0G   38G   8% /
 devtmpfs       devtmpfs  110M     0  110M   0% /dev
@@ -264,15 +277,19 @@ tmpfs          tmpfs      24M     0   24M   0% /run/user/1000
 /dev/md0p3     ext4      239M  2.1M  220M   1% /mnt/raid/part3
 /dev/md0p4     ext4      236M  2.1M  218M   1% /mnt/raid/part4
 /dev/md0p5     ext4      234M  2.1M  215M   1% /mnt/raid/part5
+```
 
-
-из методички (pdf) про pated?так можно
+---
+# Для сценариев parted
 ##### Создаем раздел GPT на RAID
+```php
 parted -s /dev/md0 mklabel gpt
-Создаем партиции
+```
+##### Создаем партиции
+```php
 parted /dev/md0 mkpart primary ext4 0% 20%
 parted /dev/md0 mkpart primary ext4 20% 40%
 parted /dev/md0 mkpart primary ext4 40% 60%
 parted /dev/md0 mkpart primary ext4 60% 80%
 parted /dev/md0 mkpart primary ext4 80% 100%
-
+```
