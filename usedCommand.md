@@ -1,13 +1,15 @@
 
-Показать железо
+##### Показать HW
 disk -l
 lsblk
 lshw
 lsscsi
-lshw -short | grep disk 
+lshw -short
+lshw -short | grep disk
 
-Стереть метаданные на блочных устройствах от старых raid
-предыдущих raid - ругается, всё хорошо.
+
+##### Стереть метаданные на блочных устройствах от старых raid
+##### предыдущих raid - ругается, всё хорошо.
 mdadm --zero-superblock --force /dev/sd{b,c,d,e,f,g}
 mdadm: Unrecognised md component device - /dev/sdb
 mdadm: Unrecognised md component device - /dev/sdc
@@ -15,7 +17,7 @@ mdadm: Unrecognised md component device - /dev/sdd
 mdadm: Unrecognised md component device - /dev/sde
 mdadm: Unrecognised md component device - /dev/sdf
 mdadm: Unrecognised md component device - /dev/sdg
-Создать новый raid
+##### Создать новый raid
 	§ устройство md0 
 	§ raid5 уровня -l 5
 	§ из 6 дисков -n 6
@@ -27,7 +29,7 @@ mdadm: chunk size defaults to 512K
 mdadm: size set to 253952K
 mdadm: Defaulting to version 1.2 metadata
 mdadm: array /dev/md0 started.
-Проверка, raid собрался, все юниты U на месте.
+##### Проверка, raid собрался, все юниты U на месте.
 cat /proc/mdstat
 Personalities : [raid6] [raid5] [raid4]
 md0 : active raid5 sdg[6] sdf[4] sde[3] sdd[2] sdc[1] sdb[0]
@@ -256,7 +258,7 @@ tmpfs          tmpfs      24M     0   24M   0% /run/user/1000
 
 
 из методички (pdf) про pated?так можно
-Создаем раздел GPT на RAID
+##### Создаем раздел GPT на RAID
 parted -s /dev/md0 mklabel gpt
 Создаем партиции
 parted /dev/md0 mkpart primary ext4 0% 20%
