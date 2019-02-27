@@ -333,7 +333,7 @@ mkdir -p /mnt/raid/part{1,2,3,4,5}
 for i in $(seq 1 5); do mount /dev/md0p$i /mnt/raid/part$i; done
 df -hT
 ```
-```
+```html
 Filesystem     Type      Size  Used Avail Use% Mounted on
 /dev/sda1      xfs        40G  3.0G   38G   8% /
 devtmpfs       devtmpfs  110M     0  110M   0% /dev
