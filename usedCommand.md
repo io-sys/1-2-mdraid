@@ -1,6 +1,6 @@
 
 ##### Показать HW
-```html
+```php
 disk -l
 lsblk
 lshw
