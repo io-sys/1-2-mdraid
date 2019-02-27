@@ -9,13 +9,11 @@ lshw -short
 lshw -short | grep disk
 ```
 ---
-
 ##### Стереть метаданные на блочных устройствах от старых raid
-
+>Ошибка Unrecognised md ... означает, что метаданных raid на диске не было, можно создавать raid.
 ```php
 mdadm --zero-superblock --force /dev/sd{b,c,d,e,f,g}
 ```
->Ошибка Unrecognised md ... означает, что метаданных raid на диске не было, можно создавать raid.
 ```
 mdadm: Unrecognised md component device - /dev/sdb
 mdadm: Unrecognised md component device - /dev/sdc
@@ -24,9 +22,7 @@ mdadm: Unrecognised md component device - /dev/sde
 mdadm: Unrecognised md component device - /dev/sdf
 mdadm: Unrecognised md component device - /dev/sdg
 ```
-
 ---
-
 ##### Создать новый raid
 >	1. устройство md0 
 >	2. raid5 уровня -l 5
@@ -54,7 +50,8 @@ md0 : active raid5 sdg[6] sdf[4] sde[3] sdd[2] sdc[1] sdb[0]
       1269760 blocks super 1.2 level 5, 512k chunk, algorithm 2 [6/6] [UUUUUU]
 
 unused devices: <none>
-Проверка, raid собрался, активных устройств 6
+```
+##### Проверка, raid собрался, активных устройств 6
 ```php
 mdadm --detail /dev/md0
 ```
@@ -93,10 +90,11 @@ Consistency Policy : resync
        4       8       80        4      active sync   /dev/sdf
        6       8       96        5      active sync   /dev/sdg
 ```
->Созданеи mdadm.conf для ОС, 
+---
+# Создание mdadm.conf для ОС - устаревшее, рекомендуется создавать.
 >	1. какой RAID массив и 
 >	2. из чего состоит
->Показать информацию raid
+##### Показать информацию raid
 ```php
 mdadm --detail --scan --verbose
 ```
@@ -104,35 +102,32 @@ mdadm --detail --scan --verbose
 ARRAY /dev/md0 level=raid5 num-devices=6 metadata=1.2 name=otuslinux:0 UUID=8d599f5e:f124b382:c434b6b6:5564f07d
    devices=/dev/sdb,/dev/sdc,/dev/sdd,/dev/sde,/dev/sdf,/dev/sdg
 ```
-
 ---
-# Создать и заполнить mdadm.conf  - устаревшее, рекомендуется создавать.
->Показать справку по формату файла mdadm.conf
+##### Показать справку по формату файла mdadm.conf
 ```php
 man mdadm.conf
 ```
->Создать файл mdadm.conf
+##### Создать файл mdadm.conf
 ```php
 touch /etc/mdadm.conf
 ```
->В mdadm.conf добавить текст "DEVICE partition" для шапки файла конфигурации.
+##### В mdadm.conf добавить текст "DEVICE partition" для шапки файла конфигурации.
 ```php
 echo "DEVICE partitions" > /etc/mdadm.conf
 ```
->Добавить >>  в файл mdadm.conf информацию mdraid через пробел.
+##### Добавить >>  в файл mdadm.conf информацию mdraid через пробел.
 ```php
 mdadm --detail --scan --verbose | awk '/ARRAY/ {print}' >> /etc/mdadm.conf
 ```
-
 ---
 # Поломать и починить raid
->Ломаю raid флагом --fail на диске sdf  
+>Установить флаг --fail на диск sdf из программного raid5
 >после установки флага --fail если перезагрузиться не надо будет делать --remove
 ```php
 mdadm /dev/md0 --fail /dev/sdf
-mdadm: set /dev/sdf faulty in /dev/md0
 ```
-
+```mdadm: set /dev/sdf faulty in /dev/md0
+```
 ##### Показать юниты U и _
 ```php
 cat /proc/mdstat
@@ -183,8 +178,6 @@ Consistency Policy : resync
 
        4       8       80        -      faulty   /dev/sdf
 ```
-
-
 #### Убрать faulty диск из raid  чтобы новый установить или перезагрузиться после установки флага --fail
 ```php
 mdadm /dev/md0 --remove /dev/sdf
@@ -232,7 +225,7 @@ mdadm --detail /dev/md0
        7       8       80        4      spare rebuilding   /dev/sdf
        6       8       96        5      active sync   /dev/sdg
 ```
-#### lvm и ext4 на неё и в fstab
+# lvm и ext4 на raid md0 и добавить id в fstab
 #### Создать physical volume
 ```php
 pvcreate /dev/md0
@@ -244,7 +237,7 @@ pvs -av
   /dev/md0      lvm2 ---  1.21g 1.21g   1.21g 2rPHZt-56xB-gHiY-0axQ-botM-am4r-DpwyPF
   /dev/sda1          ---     0     0  <40.00g
 ```
-##### Создать volume group , создать блочное устройство LVM
+#### Создать volume group , создать блочное устройство LVM
 ```php
 vgcreate vg0 /dev/md0
 ```
@@ -252,12 +245,14 @@ vgcreate vg0 /dev/md0
 ```php
 vgs
 ```
+```
   VG  #PV #LV #SN Attr   VSize  VFree
   vg0   1   0   0 wz--n- <1.21g <1.21g
+```
 ```php
 lvcreate -l100%FREE -n lv01 vg0
 ```
-Показать, что получилось.
+#### Показать, что получилось.
 ```php
 lvs
 ```
@@ -269,19 +264,18 @@ lvs
 mkfs.ext4 /dev/vg0/lv01
 lsblk-f
 ```
-
 ##### Монтировать raid - lvm - ext4
 ```php
 mkdir /mnt/lv01-data
 mount /dev/vg0/lv01 /mnt/lv01-data
 ```
-#### Для теста создал filetext записал в него 123456789
+> Для теста создан filetext с текстом 123456789
 
 #### Показать id устройства lvm
 ```php
 blkid
 ```
-'''
+```
 UUID=82117052-ba01-4b76-aef8-b7a9fab85226 /mnt/lv01-data ext4
 ```
 ##### В автозагрузку
@@ -326,7 +320,7 @@ $ ls /dev/md0*
 /dev/md0  /dev/md0p1  /dev/md0p2  /dev/md0p3  /dev/md0p4  /dev/md0p5
 ```
 ---
-#### Создать файловую систему на все х созданных патрициях.
+#### Создать файловую систему на всех созданных разделах.
 ```php
 for i in $(seq 1 5); do sudo mkfs.ext4 /dev/md0p$i; done
 lsblk -f
@@ -348,14 +342,13 @@ tmpfs          tmpfs      24M     0   24M   0% /run/user/1000
 /dev/md0p4     ext4      236M  2.1M  218M   1% /mnt/raid/part4
 /dev/md0p5     ext4      234M  2.1M  215M   1% /mnt/raid/part5
 ```
-
 ---
-# Для сценариев parted
->Создаем раздел GPT на RAID
+# Для напсания сценариев с parted так можно работать
+#### Создаем раздел GPT на RAID
 ```php
 parted -s /dev/md0 mklabel gpt
 ```
->Создаем партиции
+#### Создаем партиции
 ```php
 parted /dev/md0 mkpart primary ext4 0% 20%
 parted /dev/md0 mkpart primary ext4 20% 40%
