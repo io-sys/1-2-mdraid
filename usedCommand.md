@@ -9,7 +9,7 @@ lshw -short | grep disk
 
 
 ##### Стереть метаданные на блочных устройствах от старых raid
-##### предыдущих raid - ругается, всё хорошо.
+Ошибка Unrecognised md ... означает, что метаданных raid на диске не было, можно создавать raid.
 mdadm --zero-superblock --force /dev/sd{b,c,d,e,f,g}
 mdadm: Unrecognised md component device - /dev/sdb
 mdadm: Unrecognised md component device - /dev/sdc
